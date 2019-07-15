@@ -69,7 +69,7 @@ from models import InferSent
 # files.download( "model_upgraded_1.png" )
 
 
-modelg = infersent_glove()
+
 
 #Word Embeddings
 def infersent_glove():
@@ -91,7 +91,7 @@ def infersent_glove():
     modelg.build_vocab_k_words(K=100000)
     return modelg
 
-
+modelg = infersent_glove()
 def get_fastext(sentences_tok):
   print("Training FastText model ...\n")
   model = FastText(size=324, window=10, min_count=1)  # instantiate
