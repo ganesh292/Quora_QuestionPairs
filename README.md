@@ -1,2 +1,2 @@
-# Glove_Files
-Glove 300D vectors
+# MSCI641 Project by Ganesh and Ahmed
+Quora Question Pairs- Kaggle
