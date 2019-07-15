@@ -383,8 +383,8 @@ def main():
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                             X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b]
-                            , Y_val),
-            batch_size=128, nb_epoch=1, shuffle=True, )
+                            , Y_val),verbose=2,
+            batch_size=128, nb_epoch=5, shuffle=True, )
   return 0
 
 
