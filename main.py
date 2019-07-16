@@ -346,7 +346,7 @@ def main():
   
   
   #############Pipeline Starts################
-  net = create_network([324,3])
+  net = create_network([324,3],25)
   optimizer = Adam(lr=0.001)
   net.compile(loss="binary_crossentropy", optimizer=optimizer,metrics=['accuracy'])
   print(net.summary())
