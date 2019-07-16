@@ -82,10 +82,10 @@ def infersent_glove():
     modelg.load_state_dict(torch.load(MODEL_PATH))
     # Keep it on CPU or put it on GPU
     use_cuda = True
-    modelg = modelg.cuda() if use_cuda else model
+    modelg = modelg.cuda() if use_cuda else modelg
 
     # If infersent1 -> use GloVe embeddings. If infersent2 -> use InferSent embeddings.
-    W2V_PATH = '/tmp/GloVe/glove.840B.300d.txt' if V == 1 else 'fastText/crawl-300d-2M.vec'
+    W2V_PATH = '/tmp/GloVe/glove.840B.300d.txt' if V == 1 else '/home/ganesh/Quora_dev/tmp/GloVe/glove.840B.300d.txt'
     modelg.set_w2v_path(W2V_PATH)
     # Load embeddings of K most frequent words
     modelg.build_vocab_k_words(K=100000)
@@ -162,8 +162,15 @@ def eucl_dist_output_shape(shapes):
     shape1, shape2 = shapes
     return (shape1[0], 1)
 
+    
+def add_features():
+  data_features = pd.read_csv("quora_features_balanced.csv")
+  
+  features = data_features.drop(['question1', 'question2', 'is_duplicate','jaccard_distance'],axis=1).T.values
+  print('Shape of Features added',features.shape)
+  return features
 
-def create_network(input_dimensions):
+def create_network(input_dimensions,num_features):
   base_network_lstm_1 = create_base_network_lstm(input_dimensions)
   base_network_lstm_2 = create_base_network_lstm(input_dimensions)
   base_network_lstm_3 = create_base_network_lstm(input_dimensions)
@@ -182,10 +189,10 @@ def create_network(input_dimensions):
   input_a_lstm_3 = Input(shape=(input_dimensions[0],1))
   input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
   
-  
-  #feature_1 = Input(shape=(1,))
+  # Features
+  features = Input(shape=(num_features,))
   #feature_2 = Input(shape=(1,))
-
+  
   
   # CNN with 3 channel embedding
   inter_a_cnn = base_network_cnn(input_a_cnn)
@@ -210,7 +217,8 @@ def create_network(input_dimensions):
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
   
   
-  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3])
+  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features])
+  # feature_set = add_features(feature_set)
   d1 = Dense(128, activation='relu')(feature_set)
   drop1 = Dropout(0.1)(d1)
   d2 = Dense(128, activation='relu')(drop1)
@@ -220,18 +228,19 @@ def create_network(input_dimensions):
   
   #value = dense_network(feature_set)
   
-  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3], output=d3)
+  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features], output=d3)
   print("Model Architecture Designed")
   return model
   
 
 
+
 def main():
     #Get Dataset
   df_sub = pd.read_csv('data_balanced.csv')
-  data_features = pd.read_csv("quora_features_balanced.csv")
+  
   print('Shape of Dataset',df_sub.shape)
-  print('Shape of Features',data_features.iloc[:,3].values.shape)
+  
   
 
   df_sub['question1'] = df_sub['question1'].apply(lambda x: str(x))
@@ -254,7 +263,7 @@ def main():
 
   #Preparing Data for Training Network
   df_sub = df_sub.reindex(np.random.permutation(df_sub.index))
-
+  features = add_features()
   # set number of train and test instances
   num_train = int(df_sub.shape[0] * 0.70)
   num_val = int(df_sub.shape[0] * 0.10)
@@ -295,7 +304,7 @@ def main():
   X_train_cnn_b[:,:,1] = w2v_emb_q2[:num_train]
   X_train_cnn_b[:,:,2] = glove_emb_q2[:num_train]
 
-
+  features_train = features[:num_train]
   Y_train = df_sub[:num_train]['is_duplicate'].values
 
   X_val_cnn_a[:,:,0] = ft_emb_q1[num_train:num_val]
@@ -306,7 +315,7 @@ def main():
   X_val_cnn_b[:,:,1] = w2v_emb_q2[num_train:num_val]
   X_val_cnn_b[:,:,2] = glove_emb_q2[num_train:num_val]
 
-
+  features_val = features[num_train:num_val]
   Y_val = df_sub[num_train:num_val]['is_duplicate'].values
 
               
@@ -317,7 +326,7 @@ def main():
   X_test_cnn_b[:,:,0] = ft_emb_q2[num_val:]
   X_test_cnn_b[:,:,1] = w2v_emb_q2[num_val:]
   X_test_cnn_b[:,:,2] = glove_emb_q2[num_val:]
-
+  features_test = features[num_val:]
   Y_test = df_sub[num_val:]['is_duplicate'].values
 
 
@@ -376,15 +385,18 @@ def main():
   X_interb_val_3 = X_val_cnn_b[:,:,2]
   X_val_lstm3_a = X_intera_val_3[:,:,np.newaxis]
   X_val_lstm3_b = X_intera_val_3[:,:,np.newaxis]
-
+  
   for epoch in range(1):
       net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b], 
+              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b.features_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
-                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b]
+                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
                             , Y_val),
             batch_size=128, nb_epoch=5, shuffle=True, )
+  # prediction = net.predict([X_test_cnn_a, X_test_cnn_b, X_test_lstm1_a, X_test_lstm1_b,
+  #             X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b.features_test])
+  # print(prediction)
   return 0
 
 
