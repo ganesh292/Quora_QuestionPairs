@@ -223,7 +223,7 @@ def create_network(input_dimensions,num_features):
   drop1 = Dropout(0.1)(d1)
   d2 = Dense(128, activation='relu')(drop1)
   drop2 = Dropout(0.1)(d2)
-  d3 = Dense(1, activation='relu')(drop2)
+  d3 = Dense(1, activation='sigmoid')(drop2)
   
   
   #value = dense_network(feature_set)
@@ -357,46 +357,65 @@ def main():
   X_intera_train_1 = X_train_cnn_a[:,:,0]
   X_interb_train_1 = X_train_cnn_b[:,:,0]
   X_train_lstm1_a = X_intera_train_1[:,:,np.newaxis]
-  X_train_lstm1_b = X_intera_train_1[:,:,np.newaxis]
+  X_train_lstm1_b = X_interb_train_1[:,:,np.newaxis]
 
   X_intera_train_2 = X_train_cnn_a[:,:,1]
   X_interb_train_2 = X_train_cnn_b[:,:,1]
   X_train_lstm2_a = X_intera_train_2[:,:,np.newaxis]
-  X_train_lstm2_b = X_intera_train_2[:,:,np.newaxis]
+  X_train_lstm2_b = X_interb_train_2[:,:,np.newaxis]
 
   X_intera_train_3 = X_train_cnn_a[:,:,2]
   X_interb_train_3 = X_train_cnn_b[:,:,2]
   X_train_lstm3_a = X_intera_train_3[:,:,np.newaxis]
-  X_train_lstm3_b = X_intera_train_3[:,:,np.newaxis]
+  X_train_lstm3_b = X_interb_train_3[:,:,np.newaxis]
 
   # Validation Sets for LSTMS
 
   X_intera_val_1 = X_val_cnn_a[:,:,0]
   X_interb_val_1 = X_val_cnn_b[:,:,0]
   X_val_lstm1_a = X_intera_val_1[:,:,np.newaxis]
-  X_val_lstm1_b = X_intera_val_1[:,:,np.newaxis]
+  X_val_lstm1_b = X_interb_val_1[:,:,np.newaxis]
 
   X_intera_val_2 = X_val_cnn_a[:,:,1]
   X_interb_val_2 = X_val_cnn_b[:,:,1]
   X_val_lstm2_a = X_intera_val_2[:,:,np.newaxis]
-  X_val_lstm2_b = X_intera_val_2[:,:,np.newaxis]
+  X_val_lstm2_b = X_interb_val_2[:,:,np.newaxis]
 
   X_intera_val_3 = X_val_cnn_a[:,:,2]
   X_interb_val_3 = X_val_cnn_b[:,:,2]
   X_val_lstm3_a = X_intera_val_3[:,:,np.newaxis]
-  X_val_lstm3_b = X_intera_val_3[:,:,np.newaxis]
-  
+  X_val_lstm3_b = X_interb_val_3[:,:,np.newaxis]
+
+  # Test Set for LSTMS
+
+  X_intera_test_1 = X_test_cnn_a[:,:,0]
+  X_interb_test_1 = X_test_cnn_b[:,:,0]
+  X_test_lstm1_a = X_intera_test_1[:,:,np.newaxis]
+  X_test_lstm1_b = X_interb_test_1[:,:,np.newaxis]
+
+  X_intera_test_2 = X_test_cnn_a[:,:,1]
+  X_interb_test_2 = X_test_cnn_b[:,:,1]
+  X_test_lstm2_a = X_intera_test_2[:,:,np.newaxis]
+  X_test_lstm2_b = X_interb_test_2[:,:,np.newaxis]
+
+  X_intera_test_3 = X_test_cnn_a[:,:,2]
+  X_interb_test_3 = X_test_cnn_b[:,:,2]
+  X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
+  X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
+    
   for epoch in range(1):
-      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
+     net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
               X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                             X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
                             , Y_val),
-            batch_size=128, nb_epoch=5, shuffle=True, )
-  # prediction = net.predict([X_test_cnn_a, X_test_cnn_b, X_test_lstm1_a, X_test_lstm1_b,
-  #             X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b.features_test])
-  # print(prediction)
+            batch_size=1024, nb_epoch=2, shuffle=True, )
+
+  score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
+                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test],Y_test,batch_size=1024)
+  print('Test loss : {:.4f}'.format(score[0]))
+  print('Test accuracy : {:.4f}'.format(score[1]))
   return 0
 
 
