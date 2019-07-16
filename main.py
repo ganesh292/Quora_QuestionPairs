@@ -410,10 +410,10 @@ def main():
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                             X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
                             , Y_val),
-            batch_size=1024, nb_epoch=2, shuffle=True, )
+            batch_size=384, nb_epoch=25, shuffle=True, )
 
   score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
-                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test],Y_test,batch_size=1024)
+                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test],Y_test,batch_size=384)
   print('Test loss : {:.4f}'.format(score[0]))
   print('Test accuracy : {:.4f}'.format(score[1]))
   return 0
