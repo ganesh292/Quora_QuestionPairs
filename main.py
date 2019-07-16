@@ -262,7 +262,7 @@ def main():
   glove_emb_q2 = get_glove(q2sents)
 
   #Preparing Data for Training Network
-  df_sub = df_sub.reindex(np.random.permutation(df_sub.index))
+  # df_sub = df_sub.reindex(np.random.permutation(df_sub.index))
   features = add_features()
   # set number of train and test instances
   num_train = int(df_sub.shape[0] * 0.70)
@@ -388,7 +388,7 @@ def main():
   
   for epoch in range(1):
       net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b.features_train], 
+              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                             X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
