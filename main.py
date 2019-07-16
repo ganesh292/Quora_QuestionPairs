@@ -15,7 +15,7 @@ from tqdm import tqdm
 from time import time
 from bert_serving.client import BertClient
 
-
+from numpy import genfromtxt
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -244,12 +244,15 @@ def create_network(input_dimensions,num_features):
 
 def main():
     #Get Dataset
-  df_sub = pd.read_csv('data_balanced.csv')
+  if sys.argv[1] == "u":
+    df_sub = pd.read_csv('data_unbalanced.csv')
+    print('Shape of unbalanced Dataset',df_sub.shape)
+  elif sys.argv[1] == "b":
+    df_sub = pd.read_csv('data_balanced.csv')
+    print('Shape of Balanced Dataset',df_sub.shape)
+  else:
+    return 0
   
-  print('Shape of Dataset',df_sub.shape)
-  
-  
-
   df_sub['question1'] = df_sub['question1'].apply(lambda x: str(x))
   df_sub['question2'] = df_sub['question2'].apply(lambda x: str(x))
   q1sents = list(df_sub['question1'])
@@ -258,19 +261,46 @@ def main():
   tokenized_q2sents = [word_tokenize(i) for i in list(df_sub['question2'])]
 
   #Compute Embeddings for Q1 Pair
-  ft_emb_q1 = get_fastext(tokenized_q1sents)
-  w2v_emb_q1 = get_w2v(tokenized_q1sents)
-  glove_emb_q1 = get_glove(q1sents)
+  if sys.argv[2] == 'train':
+    ft_emb_q1 = get_fastext(tokenized_q1sents)
+    w2v_emb_q1 = get_w2v(tokenized_q1sents)
+    glove_emb_q1 = get_glove(q1sents)
 
 
-  #Compute Embeddings for Q2 Pair
-  ft_emb_q2 = get_fastext(tokenized_q2sents)
-  w2v_emb_q2 = get_w2v(tokenized_q2sents)
-  glove_emb_q2 = get_glove(q2sents)
+    #Compute Embeddings for Q2 Pair
+    ft_emb_q2 = get_fastext(tokenized_q2sents)
+    w2v_emb_q2 = get_w2v(tokenized_q2sents)
+    glove_emb_q2 = get_glove(q2sents)
+  else:
+    if sys.argv[1] == "u":
+      print('Loading Embeddings W2vec')
+      w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/word2vec/w2vec_q1_unbalanced.csv', delimiter=',',skip_header=1)
+      w2v_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/word2vec/w2vec_q2_unbalanced.csv', delimiter=',',skip_header=1)
 
-  print("Getting Bert Embeddings..")
-  bert_e = get_bertembeddings(q1sents,q2sents)
-  print('Bert Embeddings Shape',bert_e.shape)
+      print('Loading Embeddings fastext')
+      ft_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/fastext/fastext_q1_unbalanced.csv', delimiter=',',skip_header=1)
+      ft_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/fastext/fastext_q2_unbalanced.csv', delimiter=',',skip_header=1)
+      
+      print('Loading Embeddings glove')
+      glove_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/glove/glove_q1_unbalanced.csv', delimiter=',',skip_header=1)
+      glove_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/glove/glove_q2_unbalanced.csv', delimiter=',',skip_header=1)
+    elif sys.argv[1] == "b":
+      print('Loading Embeddings W2vec')
+      w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/word2vec/w2vec_q1_balanced.csv', delimiter=',',skip_header=1)
+      w2v_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/word2vec/w2vec_q2_balanced.csv', delimiter=',',skip_header=1)
+
+      print('Loading Embeddings fastext')
+      ft_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/fastext/fastext_q1_balanced.csv', delimiter=',',skip_header=1)
+      ft_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/fastext/fastext_q2_balanced.csv', delimiter=',',skip_header=1)
+      
+      print('Loading Embeddings glove')
+      glove_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/glove/glove_q1_balanced.csv', delimiter=',',skip_header=1)
+      glove_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/glove/glove_q2_balanced.csv', delimiter=',',skip_header=1)
+
+
+  # print("Getting Bert Embeddings..")
+  # bert_e = get_bertembeddings(q1sents,q2sents)
+  # print('Bert Embeddings Shape',bert_e.shape)
   #Preparing Data for Training Network
   # df_sub = df_sub.reindex(np.random.permutation(df_sub.index))
   features = add_features()
