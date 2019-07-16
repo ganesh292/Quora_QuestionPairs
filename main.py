@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from time import time
+from bert_serving.client import BertClient
 
 
 import matplotlib
@@ -116,6 +117,12 @@ def get_glove(sentences):
   pca = PCA(n_components=324) #reduce down to 50 dim
   glove_embeddings = pca.fit_transform(embeddings)
   return glove_embeddings
+
+def get_bertembeddings(q1,q2):
+  q = list(map(lambda x, y: x+ ' ||| ' +y, q1, q2))
+  bc = BertClient()
+  bert_embeddings = bc.encode(q)
+  return bert_embeddings
 
 
 def create_base_network_cnn(input_dimensions):
@@ -261,6 +268,9 @@ def main():
   w2v_emb_q2 = get_w2v(tokenized_q2sents)
   glove_emb_q2 = get_glove(q2sents)
 
+  print("Getting Bert Embeddings..")
+  bert_e = get_bertembeddings(q1sents,q2sents)
+  print('Bert Embeddings Shape',bert_e.shape)
   #Preparing Data for Training Network
   # df_sub = df_sub.reindex(np.random.permutation(df_sub.index))
   features = add_features()
