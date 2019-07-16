@@ -166,7 +166,7 @@ def eucl_dist_output_shape(shapes):
 def add_features():
   data_features = pd.read_csv("quora_features_balanced.csv")
   
-  features = data_features.drop(['question1', 'question2', 'is_duplicate','jaccard_distance'],axis=1).T.values
+  features = data_features.drop(['question1', 'question2', 'is_duplicate','jaccard_distance'],axis=1).values
   print('Shape of Features added',features.shape)
   return features
 
