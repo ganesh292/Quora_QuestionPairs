@@ -442,6 +442,13 @@ def main():
   X_interb_test_3 = X_test_cnn_b[:,:,2]
   X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
   X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
+
+  filepath="./QQP_{epoch:02d}_{val_loss:.4f}.h5"
+  checkpoint = callbacks.ModelCheckpoint(filepath, 
+                                        monitor='val_loss', 
+                                        verbose=0, 
+                                        save_best_only=True)
+  callbacks_list = [checkpoint]
     
   for epoch in range(1):
      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
@@ -450,7 +457,7 @@ def main():
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                             X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
                             , Y_val),
-            batch_size=384, nb_epoch=25, shuffle=True, )
+            batch_size=384, nb_epoch=25, shuffle=True,callbacks = callbacks_list)
 
   score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
                 X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test],Y_test,batch_size=384)
