@@ -37,6 +37,7 @@ from nltk.tokenize import word_tokenize
 
 
 from keras import backend as K
+from keras import callbacks
 import tensorflow as tf
 import tensorflow_hub as hub
 from keras.models import Model, Sequential
@@ -197,8 +198,8 @@ def create_network(input_dimensions,num_features):
   input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
   
   # Features
-  features = Input(shape=(num_features,))
-  #feature_2 = Input(shape=(1,))
+  #features = Input(shape=(num_features,))
+  features_b = Input(shape=(768,))
   
   
   # CNN with 3 channel embedding
@@ -224,18 +225,18 @@ def create_network(input_dimensions,num_features):
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
   
   
-  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features])
+  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features_b])
   # feature_set = add_features(feature_set)
   d1 = Dense(128, activation='relu')(feature_set)
-  drop1 = Dropout(0.1)(d1)
-  d2 = Dense(128, activation='relu')(drop1)
-  drop2 = Dropout(0.1)(d2)
+  drop1 = Dropout(0.3)(d1)
+  d2 = Dense(64, activation='relu')(drop1)
+  drop2 = Dropout(0.3)(d2)
   d3 = Dense(1, activation='sigmoid')(drop2)
   
   
   #value = dense_network(feature_set)
   
-  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features], output=d3)
+  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features_b], output=d3)
   print("Model Architecture Designed")
   return model
   
@@ -276,14 +277,21 @@ def main():
       print('Loading Embeddings W2vec')
       w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/word2vec/w2vec_q1_unbalanced.csv', delimiter=',',skip_header=1)
       w2v_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/word2vec/w2vec_q2_unbalanced.csv', delimiter=',',skip_header=1)
-
+      w2v_emb_q1 = np.delete(w2v_emb_q1, 0, 1)
+      w2v_emb_q2 = np.delete(w2v_emb_q2, 0, 1)
       print('Loading Embeddings fastext')
       ft_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/fastext/fastext_q1_unbalanced.csv', delimiter=',',skip_header=1)
       ft_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/fastext/fastext_q2_unbalanced.csv', delimiter=',',skip_header=1)
-      
+      ft_emb_q1 = np.delete(ft_emb_q1, 0, 1)
+      ft_emb_q2 = np.delete(ft_emb_q2,0, 1)
       print('Loading Embeddings glove')
       glove_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/glove/glove_q1_unbalanced.csv', delimiter=',',skip_header=1)
       glove_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/glove/glove_q2_unbalanced.csv', delimiter=',',skip_header=1)
+      glove_emb_q1 = np.delete(glove_emb_q1,0, 1)
+      glove_emb_q2 = np.delete(glove_emb_q2, 0, 1)
+      print('Loading Embeddings BERT')
+      bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_unbalanced.csv', delimiter=',',skip_header=1)
+      bert_q = np.delete(bert_q,0,1)
     elif sys.argv[1] == "b":
       print('Loading Embeddings W2vec')
       w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/word2vec/w2vec_q1_balanced.csv', delimiter=',',skip_header=1)
@@ -296,7 +304,17 @@ def main():
       print('Loading Embeddings glove')
       glove_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/glove/glove_q1_balanced.csv', delimiter=',',skip_header=1)
       glove_emb_q2 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/glove/glove_q2_balanced.csv', delimiter=',',skip_header=1)
+      w2v_emb_q1 = np.delete(w2v_emb_q1, 0, 1)
+      w2v_emb_q2 = np.delete(w2v_emb_q2, 0, 1)
 
+      ft_emb_q1 = np.delete(ft_emb_q1, 0, 1)
+      ft_emb_q2 = np.delete(ft_emb_q2, 0, 1)
+
+      glove_emb_q1 = np.delete(glove_emb_q1, 0, 1)
+      glove_emb_q2 = np.delete(glove_emb_q2, 0, 1)
+      print('Loading Embeddings BERT')
+      bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_unbalanced.csv', delimiter=',',skip_header=1)
+      bert_q = np.delete(bert_q,0,1)
 
   # print("Getting Bert Embeddings..")
   # bert_e = get_bertembeddings(q1sents,q2sents)
@@ -345,6 +363,7 @@ def main():
   X_train_cnn_b[:,:,2] = glove_emb_q2[:num_train]
 
   features_train = features[:num_train]
+  features_b_train = bert_q[:num_train]
   Y_train = df_sub[:num_train]['is_duplicate'].values
 
   X_val_cnn_a[:,:,0] = ft_emb_q1[num_train:num_val]
@@ -356,6 +375,7 @@ def main():
   X_val_cnn_b[:,:,2] = glove_emb_q2[num_train:num_val]
 
   features_val = features[num_train:num_val]
+  features_b_val = bert_q[num_train:num_val]
   Y_val = df_sub[num_train:num_val]['is_duplicate'].values
 
               
@@ -367,6 +387,7 @@ def main():
   X_test_cnn_b[:,:,1] = w2v_emb_q2[num_val:]
   X_test_cnn_b[:,:,2] = glove_emb_q2[num_val:]
   features_test = features[num_val:]
+  features_b_test = bert_q[num_val:]
   Y_test = df_sub[num_val:]['is_duplicate'].values
 
 
@@ -452,15 +473,15 @@ def main():
     
   for epoch in range(1):
      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train], 
+              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_b_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
-                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val]
+                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_b_val]
                             , Y_val),
-            batch_size=384, nb_epoch=25, shuffle=True,callbacks = callbacks_list)
+            batch_size=384, nb_epoch=8, shuffle=True,callbacks = callbacks_list)
 
   score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
-                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test],Y_test,batch_size=384)
+                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_b_test],Y_test,batch_size=384)
   print('Test loss : {:.4f}'.format(score[0]))
   print('Test accuracy : {:.4f}'.format(score[1]))
   return 0
