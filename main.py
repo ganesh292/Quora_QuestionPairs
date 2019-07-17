@@ -59,7 +59,7 @@ import numpy as np
 
 import torch
 from models import InferSent
-
+from keras import regularizers
 # import matplotlib as mpl
 # # %matplotlib inline
 # from matplotlib import pyplot as plt
@@ -72,6 +72,8 @@ from models import InferSent
 
 
 
+def l1_reg(weight_matrix):
+    return 0.01 * K.sum(K.abs(weight_matrix))
 
 #Word Embeddings
 def infersent_glove():
@@ -198,7 +200,7 @@ def create_network(input_dimensions,num_features):
   input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
   
   # Features
-  #features = Input(shape=(num_features,))
+  features = Input(shape=(num_features,))
   features_b = Input(shape=(768,))
   
   
@@ -225,18 +227,18 @@ def create_network(input_dimensions,num_features):
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
   
   
-  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features_b])
+  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
   # feature_set = add_features(feature_set)
-  d1 = Dense(128, activation='relu')(feature_set)
-  drop1 = Dropout(0.3)(d1)
-  d2 = Dense(64, activation='relu')(drop1)
-  drop2 = Dropout(0.3)(d2)
+  d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.01))(feature_set)
+  drop1 = Dropout(0.2)(d1)
+  d2 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.01))(drop1)
+  drop2 = Dropout(0.2)(d2)
   d3 = Dense(1, activation='sigmoid')(drop2)
   
   
   #value = dense_network(feature_set)
   
-  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features_b], output=d3)
+  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
   print("Model Architecture Designed")
   return model
   
@@ -473,15 +475,15 @@ def main():
     
   for epoch in range(1):
      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_b_train], 
+              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
-                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_b_val]
+                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
                             , Y_val),
             batch_size=384, nb_epoch=8, shuffle=True,callbacks = callbacks_list)
 
   score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
-                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_b_test],Y_test,batch_size=384)
+                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
   print('Test loss : {:.4f}'.format(score[0]))
   print('Test accuracy : {:.4f}'.format(score[1]))
   return 0
