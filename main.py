@@ -315,8 +315,9 @@ def main():
       glove_emb_q1 = np.delete(glove_emb_q1, 0, 1)
       glove_emb_q2 = np.delete(glove_emb_q2, 0, 1)
       print('Loading Embeddings BERT')
-      bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_unbalanced.csv', delimiter=',',skip_header=1)
+      bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_balanced.csv', delimiter=',',skip_header=1)
       bert_q = np.delete(bert_q,0,1)
+      print("Shape of BERT Embeddings:",bert_q.shape)
 
   # print("Getting Bert Embeddings..")
   # bert_e = get_bertembeddings(q1sents,q2sents)
@@ -394,11 +395,12 @@ def main():
 
 
   print("Input Shapes")
-  print("CNN A:")
+  print("CNN Shape")
   print(X_train_cnn_a.shape,X_val_cnn_a.shape,X_test_cnn_a.shape)
-  print("CNN B:")
-  print(X_train_cnn_b.shape,X_val_cnn_b.shape,X_test_cnn_b.shape)
-  print("Single Channel Shapes for Others")
+  print("LSTM Shape:")
+  print(X_train_lstm1_a,X_val_lstm1_a,X_test_lstm1_a)
+  print("Features shape:",features_train.shape,features_val.shape,features_test.shape)
+  print("BERT Features shape:",features_b_train.shape,features_b_val.shape,features_b_test.shape)
 
 
   print("Label's Shape")
@@ -474,6 +476,7 @@ def main():
   callbacks_list = [checkpoint]
     
   for epoch in range(1):
+    if sys.argv[3] == "resume":
      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
               X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
               Y_train,
