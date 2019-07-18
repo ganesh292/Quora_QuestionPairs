@@ -175,7 +175,10 @@ def eucl_dist_output_shape(shapes):
 
     
 def add_features():
-  data_features = pd.read_csv("quora_features_balanced.csv")
+  if sys.argv[1] == "b":
+    data_features = pd.read_csv("quora_features_balanced.csv")
+  else:
+    data_features = pd.read_csv("quora_features_unbalanced.csv")
   
   features = data_features.drop(['question1', 'question2', 'is_duplicate','jaccard_distance'],axis=1).values
   print('Shape of Features added',features.shape)
@@ -247,6 +250,13 @@ def create_network(input_dimensions,num_features):
 
 
 def main():
+  #default params
+  print('Parameters I/p: u/b embtrain/noembtrain train/test resume/new','modelname')
+  if sys.argv[1] == 'o':
+    del sys.argv[1:2]
+  else:
+    sys.argv[1:] = ['b','noembtrain','train','new','QQP_08_0.6723.h5']
+
     #Get Dataset
   if sys.argv[1] == "u":
     df_sub = pd.read_csv('data_unbalanced.csv')
@@ -295,7 +305,7 @@ def main():
       print('Loading Embeddings BERT')
       bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_unbalanced.csv', delimiter=',',skip_header=1)
       bert_q = np.delete(bert_q,0,1)
-      print("Shape of BERT Embeddings:",bert_q.shape)
+      
     elif sys.argv[1] == "b":
       print('Loading Embeddings W2vec')
       w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/word2vec/w2vec_q1_balanced.csv', delimiter=',',skip_header=1)
@@ -319,7 +329,7 @@ def main():
       print('Loading Embeddings BERT')
       bert_q = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/bert/bert_qpair_balanced.csv', delimiter=',',skip_header=1)
       bert_q = np.delete(bert_q,0,1)
-      print("Shape of BERT Embeddings:",bert_q.shape)
+      
 
   # print("Getting Bert Embeddings..")
   # bert_e = get_bertembeddings(q1sents,q2sents)
@@ -396,16 +406,10 @@ def main():
   Y_test = df_sub[num_val:]['is_duplicate'].values
 
 
-  print("Input Shapes")
-  print("CNN Shape")
-  print(X_train_cnn_a.shape,X_val_cnn_a.shape,X_test_cnn_a.shape)
   
-  print("Features shape:",features_train.shape,features_val.shape,features_test.shape)
-  print("BERT Features shape:",features_b_train.shape,features_b_val.shape,features_b_test.shape)
 
 
-  print("Label's Shape")
-  print(Y_train.shape,Y_val.shape,Y_test.shape)
+ 
 
 
  
@@ -468,8 +472,18 @@ def main():
   X_interb_test_3 = X_test_cnn_b[:,:,2]
   X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
   X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
-  print("LSTM Shape:")
+
+  print("Input Shapes")
+  print("CNN Shape")
+  print(X_train_cnn_a.shape,X_val_cnn_a.shape,X_test_cnn_a.shape)
+  print("LSTM (3) Shape:")
   print(X_train_lstm1_a.shape,X_val_lstm1_a.shape,X_test_lstm1_a.shape)
+
+  print("Features shape:",features_train.shape,features_val.shape,features_test.shape)
+  print("BERT Features shape:",features_b_train.shape,features_b_val.shape,features_b_test.shape)
+  
+  print("Labels Shape")
+  print(Y_train.shape,Y_val.shape,Y_test.shape)
 
   filepath="./QQP_{epoch:02d}_{val_loss:.4f}.h5"
   checkpoint = callbacks.ModelCheckpoint(filepath, 
@@ -478,11 +492,16 @@ def main():
                                         save_best_only=True)
   callbacks_list = [checkpoint]
   
-  if sys.argv[3] == "fit":
+  if sys.argv[3] == "train":
     for epoch in range(1):
       if sys.argv[4] == "resume":
         print('Resuming Model..')
-        net = load_model('QQP_08_0.6723.h5')
+        net = load_model(sys.argv[5])
+        #Add new config to trained model
+
+
+
+
       net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
                 X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
                 Y_train,
