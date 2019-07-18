@@ -317,7 +317,7 @@ def main():
       glove_emb_q1 = np.delete(glove_emb_q1, 0, 1)
       glove_emb_q2 = np.delete(glove_emb_q2, 0, 1)
       print('Loading Embeddings BERT')
-      bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_balanced.csv', delimiter=',',skip_header=1)
+      bert_q = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/bert/bert_qpair_balanced.csv', delimiter=',',skip_header=1)
       bert_q = np.delete(bert_q,0,1)
       print("Shape of BERT Embeddings:",bert_q.shape)
 
