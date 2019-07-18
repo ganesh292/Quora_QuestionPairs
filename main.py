@@ -496,6 +496,7 @@ def main():
     print('Test loss : {:.4f}'.format(score[0]))
     print('Test accuracy : {:.4f}'.format(score[1]))
   else:
+    net = load_model('QQP_08_0.6723.h5')
     score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
                   X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
     print('Test loss : {:.4f}'.format(score[0]))
