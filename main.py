@@ -45,6 +45,7 @@ from keras.layers import Input, Dense, Dropout, Flatten, Activation, BatchNormal
 from keras.optimizers import RMSprop, SGD, Adam
 
 # Network Architecture
+from keras.models import load_model
 
 from keras.models import Sequential, Model
 from keras.layers import Conv1D , MaxPooling1D, Flatten,Dense,Input,Lambda
@@ -294,6 +295,7 @@ def main():
       print('Loading Embeddings BERT')
       bert_q = genfromtxt('/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_qpair_unbalanced.csv', delimiter=',',skip_header=1)
       bert_q = np.delete(bert_q,0,1)
+      print("Shape of BERT Embeddings:",bert_q.shape)
     elif sys.argv[1] == "b":
       print('Loading Embeddings W2vec')
       w2v_emb_q1 = genfromtxt('/tmp/Ganesh_MSCI/balanced_Embeddings/word2vec/w2vec_q1_balanced.csv', delimiter=',',skip_header=1)
@@ -397,8 +399,7 @@ def main():
   print("Input Shapes")
   print("CNN Shape")
   print(X_train_cnn_a.shape,X_val_cnn_a.shape,X_test_cnn_a.shape)
-  print("LSTM Shape:")
-  print(X_train_lstm1_a,X_val_lstm1_a,X_test_lstm1_a)
+  
   print("Features shape:",features_train.shape,features_val.shape,features_test.shape)
   print("BERT Features shape:",features_b_train.shape,features_b_val.shape,features_b_test.shape)
 
@@ -467,6 +468,8 @@ def main():
   X_interb_test_3 = X_test_cnn_b[:,:,2]
   X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
   X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
+  print("LSTM Shape:")
+  print(X_train_lstm1_a,X_val_lstm1_a,X_test_lstm1_a)
 
   filepath="./QQP_{epoch:02d}_{val_loss:.4f}.h5"
   checkpoint = callbacks.ModelCheckpoint(filepath, 
@@ -477,7 +480,9 @@ def main():
     
   for epoch in range(1):
     if sys.argv[3] == "resume":
-     net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
+      print('Resuming Model..')
+      net = load_model('QQP_08_0.6723.h5')
+    net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
               X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
               Y_train,
             validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
