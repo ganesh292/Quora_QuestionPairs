@@ -265,7 +265,7 @@ def main():
   tokenized_q2sents = [word_tokenize(i) for i in list(df_sub['question2'])]
 
   #Compute Embeddings for Q1 Pair
-  if sys.argv[2] == 'train':
+  if sys.argv[2] == 'embtrain':
     ft_emb_q1 = get_fastext(tokenized_q1sents)
     w2v_emb_q1 = get_w2v(tokenized_q1sents)
     glove_emb_q1 = get_glove(q1sents)
@@ -469,7 +469,7 @@ def main():
   X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
   X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
   print("LSTM Shape:")
-  print(X_train_lstm1_a,X_val_lstm1_a,X_test_lstm1_a)
+  print(X_train_lstm1_a.shape,X_val_lstm1_a.shape,X_test_lstm1_a.shape)
 
   filepath="./QQP_{epoch:02d}_{val_loss:.4f}.h5"
   checkpoint = callbacks.ModelCheckpoint(filepath, 
@@ -477,23 +477,29 @@ def main():
                                         verbose=0, 
                                         save_best_only=True)
   callbacks_list = [checkpoint]
-    
-  for epoch in range(1):
-    if sys.argv[3] == "resume":
-      print('Resuming Model..')
-      net = load_model('QQP_08_0.6723.h5')
-    net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-              X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
-              Y_train,
-            validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
-                            X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
-                            , Y_val),
-            batch_size=384, nb_epoch=8, shuffle=True,callbacks = callbacks_list)
+  
+  if sys.argv[3] == "fit":
+    for epoch in range(1):
+      if sys.argv[4] == "resume":
+        print('Resuming Model..')
+        net = load_model('QQP_08_0.6723.h5')
+      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
+                X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
+                Y_train,
+              validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
+                              X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
+                              , Y_val),
+              batch_size=384, nb_epoch=8, shuffle=True,callbacks = callbacks_list)
 
-  score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
-                X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
-  print('Test loss : {:.4f}'.format(score[0]))
-  print('Test accuracy : {:.4f}'.format(score[1]))
+    score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
+                  X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
+    print('Test loss : {:.4f}'.format(score[0]))
+    print('Test accuracy : {:.4f}'.format(score[1]))
+  else:
+    score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
+                  X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
+    print('Test loss : {:.4f}'.format(score[0]))
+    print('Test accuracy : {:.4f}'.format(score[1]))
   return 0
 
 
