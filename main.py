@@ -138,9 +138,9 @@ def create_base_network_cnn(input_dimensions):
 def create_base_network_lstm(input_dimensions):
   input = Input(shape=(input_dimensions[0],1))
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
-  b3 = BatchNormalization(layer1)
+  b3 = BatchNormalization()(layer1)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(b3)
-  b3 = BatchNormalization(layer2)
+  b3 = BatchNormalization()(layer2)
   dense = Dense(100,name='dense_lstm')(b3)
   
   model = Model(input=input,output=dense)
@@ -152,10 +152,10 @@ def dense_network(features):
   #x = Flatten()(features)
   d1 = Dense(128, activation='relu')(input)
   drop1 = Dropout(0.1)(d1)
-  b1 = BatchNormalization(drop1)
+  b1 = BatchNormalization()(drop1)
   d2 = Dense(128, activation='relu')(b1)
   drop2 = Dropout(0.1)(d2)
-  b2 = BatchNormalization(drop2)
+  b2 = BatchNormalization()(drop2)
   d3 = Dense(1, activation='relu')(b2)
   model = Model(input = input,output=d3)
   return model
@@ -255,10 +255,10 @@ def create_network(input_dimensions,num_features):
   #x = Flatten()(features)
   d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(input)
   drop1 = Dropout(0.3)(d1)
-  b1 = BatchNormalization(drop1)
+  b1 = BatchNormalization()(drop1)
   d2 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b1)
   drop2 = Dropout(0.3)(d2)
-  b2 = BatchNormalization(drop2)
+  b2 = BatchNormalization()(drop2)
   d3 = Dense(1, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b2)
   model = Model(input = input,output=d3)
 
