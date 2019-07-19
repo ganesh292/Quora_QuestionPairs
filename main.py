@@ -561,7 +561,7 @@ def main():
                 X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,X_train_lstm4_a, X_train_lstm4_b,features_train,features_b_train], 
                 Y_train,
               validation_data=([X_val_lstm1_a, X_val_lstm1_b,
-                              X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,X_val_lstm4_a, X_val_lstm4_b,,features_b_val]
+                              X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
                               , Y_val),
               batch_size=384, nb_epoch=16, shuffle=True)
 
