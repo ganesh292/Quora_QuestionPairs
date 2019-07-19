@@ -240,7 +240,7 @@ def create_network(input_dimensions,num_features):
   
   
   #Concatenation of Features
-  feature_set = Concatenate(axis=-1)([d_cnn_d,d_lstm_1,d_lstm_2,d_lstm_3,d_lstm_4,features,features_b])
+  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,d_lstm_4,features,features_b])
   # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
   # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_4,features,features_b])
   # feature_set = add_features(feature_set)
