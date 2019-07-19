@@ -504,13 +504,13 @@ def main():
   X_intera_test_4 = bert_q1[num_test]
   X_test_lstm4_a = X_intera_test_4[:,:,np.newaxis]
 
-  X_intera_train_4 = bert_q2[num_train]
+  X_interb_train_4 = bert_q2[num_train]
   X_train_lstm4_b = X_interb_train_4[:,:,np.newaxis]
 
-  X_intera_val_4 = bert_q2[num_val]
+  X_interb_val_4 = bert_q2[num_val]
   X_val_lstm4_b = X_interb_val_4[:,:,np.newaxis]
 
-  X_intera_test_4 = bert_q2[num_test]
+  X_interb_test_4 = bert_q2[num_test]
   X_test_lstm4_b = X_interb_test_4[:,:,np.newaxis]
 
   print("Input Shapes")
