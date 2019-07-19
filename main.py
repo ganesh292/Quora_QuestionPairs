@@ -200,8 +200,8 @@ def create_network(input_dimensions,num_features):
 
   #Glove
   base_network_lstm_3 = create_base_network_lstm(input_dimensions)
-  input_a_lstm_3 = Input(shape=(1,input_dimensions[0],1))
-  input_b_lstm_3 = Input(shape=(1,input_dimensions[0],1))
+  input_a_lstm_3 = Input(shape=(input_dimensions[0],1))
+  input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
   # LSTM with embedding 3
   inter_a_lstm_3 = base_network_lstm_3(input_a_lstm_3)
   inter_b_lstm_3 = base_network_lstm_3(input_b_lstm_3)
@@ -209,8 +209,8 @@ def create_network(input_dimensions,num_features):
 
   #BERT
   base_network_lstm_4 = dense_network([768,1])
-  input_a_lstm_4 = Input(shape=(768,1))
-  input_b_lstm_4 = Input(shape=(768,1))
+  input_a_lstm_4 = Input(shape=(1,768,1))
+  input_b_lstm_4 = Input(shape=(1,768,1))
    # LSTM with embedding 3
   inter_a_lstm_4 = base_network_lstm_4(input_a_lstm_4)
   inter_b_lstm_4 = base_network_lstm_4(input_b_lstm_4)
