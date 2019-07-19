@@ -495,15 +495,23 @@ def main():
 
   # Test Set for LSTM4 BERT
 
+  X_intera_train_4 = bert_q1[num_train]
+  X_train_lstm4_a = X_intera_train_4[:,:,np.newaxis]
 
-  X_train_lstm4_a = bert_q1[num_train]
-  X_train_lstm4_b = bert_q2[num_train]
- 
-  X_val_lstm4_a = bert_q1[num_val]
-  X_val_lstm4_b = bert_q1[num_val]
+  X_intera_val_4 = bert_q1[num_val]
+  X_val_lstm4_a = X_intera_val_4[:,:,np.newaxis]
 
-  X_test_lstm4_a = bert_q1[num_test]
-  X_test_lstm4_b = bert_q1[num_test]
+  X_intera_test_4 = bert_q1[num_test]
+  X_test_lstm4_a = X_intera_test_4[:,:,np.newaxis]
+
+  X_intera_train_4 = bert_q2[num_train]
+  X_train_lstm4_b = X_intera_train_4[:,:,np.newaxis]
+
+  X_intera_val_4 = bert_q2[num_val]
+  X_val_lstm4_b = X_intera_val_4[:,:,np.newaxis]
+
+  X_intera_test_4 = bert_q2[num_test]
+  X_test_lstm4_b = X_intera_test_4[:,:,np.newaxis]
 
   print("Input Shapes")
   print("CNN Shape")
