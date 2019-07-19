@@ -557,10 +557,10 @@ def main():
       #                         , Y_val),
       #         batch_size=384, nb_epoch=1, shuffle=True,callbacks = callbacks_list)
 
-      net.fit([ X_train_lstm1_a, X_train_lstm1_b,
+      net.fit([ X_train_cnn_a, X_train_cnn_b,X_train_lstm1_a, X_train_lstm1_b,
                 X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,X_train_lstm4_a, X_train_lstm4_b,features_train,features_b_train], 
                 Y_train,
-              validation_data=([X_val_lstm1_a, X_val_lstm1_b,
+              validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
                               X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
                               , Y_val),
               batch_size=384, nb_epoch=16, shuffle=True)
@@ -573,7 +573,7 @@ def main():
       #                         , Y_val),
       #         batch_size=384, nb_epoch=16, shuffle=True)
     # score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
-    score = net.evaluate([X_test_lstm1_a, X_test_lstm1_b,
+    score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
                   X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
     print('Test loss : {:.4f}'.format(score[0]))
     print('Test accuracy : {:.4f}'.format(score[1]))
