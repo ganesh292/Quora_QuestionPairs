@@ -130,7 +130,7 @@ def create_base_network_cnn(input_dimensions):
   conv3  = Conv1D(filters=128,kernel_size=4,strides=1,activation='relu',name='conv3')(pool2)
   flat   = Flatten(name='flat_cnn')(conv3)
   # dense  = Dense(376,name='dense_cnn')(flat)
-  dense  = Dense(376,name='dense_cnn')(flat)
+  dense  = Dense(100,name='dense_cnn')(flat)
    
   model  = Model(input=input,output=dense)
   return model
@@ -139,7 +139,7 @@ def create_base_network_lstm(input_dimensions):
   input = Input(shape=(768,1))
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
-  dense = Dense(768,name='dense_lstm')(layer2)
+  dense = Dense(2,name='dense_lstm')(layer2)
   
   model = Model(input=input,output=dense)
   return model
