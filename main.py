@@ -136,7 +136,7 @@ def create_base_network_cnn(input_dimensions):
   return model
 
 def create_base_network_lstm(input_dimensions):
-  input = Input(shape=(input_dimensions[0],1))
+  input = Input(shape=(768,1))
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
   # dense = Dense(376,name='dense_lstm')(layer2)
