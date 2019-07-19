@@ -360,69 +360,77 @@ def main():
   features = add_features()
   # set number of train and test instances
 
-  total = np.arange(df_sub.shape[0])
-  num_train1,num_test = train_test_split(total,test_size=0.1,random_state=33)
-  num_train,num_val = train_test_split(num_train1,test_size=1/9)
+  num_train = int(df_sub.shape[0] * 0.70)
+  num_val = int(df_sub.shape[0] * 0.10)
+  num_test = df_sub.shape[0] - num_train - num_val 
+
+  # total = np.arange(df_sub.shape[0])
+  # num_train1,num_test = train_test_split(total,test_size=0.1,random_state=33)
+  # num_train,num_val = train_test_split(num_train1,test_size=1/9)
               
-  print("Number of training pairs: %i"%(len(num_train)))
-  print("Number of Validation pairs: %i"%(len(num_val)))
-  print("Number of testing pairs: %i"%(len(num_test)))
+  print("Number of training pairs: %i"%(num_train))
+  print("Number of Validation pairs: %i"%(num_val))
+  print("Number of testing pairs: %i"%(num_test))
 
 
-  # init data data arrays
-  X_train_cnn_a = np.zeros([len(num_train), 324, 3])
-  X_test_cnn_a  = np.zeros([len(num_test), 324, 3])
-  X_val_cnn_a  = np.zeros([len(num_val), 324, 3])
+    # init data data arrays
+  X_train_cnn_a = np.zeros([num_train, 324, 3])
+  X_test_cnn_a  = np.zeros([num_test, 324, 3])
+  X_val_cnn_a  = np.zeros([num_val, 324, 3])
 
-  X_train_cnn_b = np.zeros([len(num_train), 324, 3])
-  X_test_cnn_b  = np.zeros([len(num_test), 324, 3])
-  X_val_cnn_b  = np.zeros([len(num_val), 324, 3])
+  X_train_cnn_b = np.zeros([num_train, 324, 3])
+  X_test_cnn_b  = np.zeros([num_test, 324, 3])
+  X_val_cnn_b  = np.zeros([num_val, 324, 3])
 
-  Y_train = np.zeros([len(num_train)]) 
-  Y_test = np.zeros([len(num_test)])
-  Y_val = np.zeros([len(num_val)]) 
+  Y_train = np.zeros([num_train]) 
+  Y_test = np.zeros([num_test])
+  Y_val = np.zeros([num_val]) 
+
 
   #Labels
   Y_train = df_sub['is_duplicate'].values[num_train]
   Y_val = df_sub['is_duplicate'].values[num_val]
   Y_test = df_sub['is_duplicate'].values[num_val]
   
-  #Features Data
-  features_train = features[num_train]
-  features_b_train = bert_q[num_train]
-  features_val = features[num_val]
-  features_b_val = bert_q[num_val]
-  features_test = features[num_val]
-  features_b_test = bert_q[num_val]
 
-  #CNN DATA
-  X_train_cnn_a[:,:,0] = ft_emb_q1[num_train]
-  X_train_cnn_a[:,:,1] = w2v_emb_q1[num_train]
-  X_train_cnn_a[:,:,2] = glove_emb_q1[num_train]
 
-  X_train_cnn_b[:,:,0] = ft_emb_q2[num_train]
-  X_train_cnn_b[:,:,1] = w2v_emb_q2[num_train]
-  X_train_cnn_b[:,:,2] = glove_emb_q2[num_train]
+  num_val = num_train + int(df_sub.shape[0] * 0.10)
+  # fill data arrays with features
+  X_train_cnn_a[:,:,0] = ft_emb_q1[:num_train]
+  X_train_cnn_a[:,:,1] = w2v_emb_q1[:num_train]
+  X_train_cnn_a[:,:,2] = glove_emb_q1[:num_train]
 
-  
-  X_val_cnn_a[:,:,0] = ft_emb_q1[num_val]
-  X_val_cnn_a[:,:,1] = w2v_emb_q1[num_val]
-  X_val_cnn_a[:,:,2] = glove_emb_q1[num_val]
+  X_train_cnn_b[:,:,0] = ft_emb_q2[:num_train]
+  X_train_cnn_b[:,:,1] = w2v_emb_q2[:num_train]
+  X_train_cnn_b[:,:,2] = glove_emb_q2[:num_train]
 
-  X_val_cnn_b[:,:,0] = ft_emb_q2[num_val]
-  X_val_cnn_b[:,:,1] = w2v_emb_q2[num_val]
-  X_val_cnn_b[:,:,2] = glove_emb_q2[num_val]
+  features_train = features[:num_train]
+  features_b_train = bert_q[:num_train]
+  Y_train = df_sub[:num_train]['is_duplicate'].values
 
-  
-              
-  X_test_cnn_a[:,:,0] = ft_emb_q1[num_val]
-  X_test_cnn_a[:,:,1] = w2v_emb_q1[num_val]
-  X_test_cnn_a[:,:,2] = glove_emb_q1[num_val]
+  X_val_cnn_a[:,:,0] = ft_emb_q1[num_train:num_val]
+  X_val_cnn_a[:,:,1] = w2v_emb_q1[num_train:num_val]
+  X_val_cnn_a[:,:,2] = glove_emb_q1[num_train:num_val]
 
-  X_test_cnn_b[:,:,0] = ft_emb_q2[num_val]
-  X_test_cnn_b[:,:,1] = w2v_emb_q2[num_val]
-  X_test_cnn_b[:,:,2] = glove_emb_q2[num_val]
-  
+  X_val_cnn_b[:,:,0] = ft_emb_q2[num_train:num_val]
+  X_val_cnn_b[:,:,1] = w2v_emb_q2[num_train:num_val]
+  X_val_cnn_b[:,:,2] = glove_emb_q2[num_train:num_val]
+
+  features_val = features[num_train:num_val]
+  features_b_val = bert_q[num_train:num_val]
+  Y_val = df_sub[num_train:num_val]['is_duplicate'].values
+
+
+  X_test_cnn_a[:,:,0] = ft_emb_q1[num_val:]
+  X_test_cnn_a[:,:,1] = w2v_emb_q1[num_val:]
+  X_test_cnn_a[:,:,2] = glove_emb_q1[num_val:]
+
+  X_test_cnn_b[:,:,0] = ft_emb_q2[num_val:]
+  X_test_cnn_b[:,:,1] = w2v_emb_q2[num_val:]
+  X_test_cnn_b[:,:,2] = glove_emb_q2[num_val:]
+  features_test = features[num_val:]
+  features_b_test = bert_q[num_val:]
+  Y_test = df_sub[num_val:]['is_duplicate'].values
 
   
 
@@ -495,22 +503,22 @@ def main():
 
   # Test Set for LSTM4 BERT
 
-  X_intera_train_4 = bert_q1[num_train]
+  X_intera_train_4 = bert_q1[:num_train]
   X_train_lstm4_a = X_intera_train_4[:,:,np.newaxis]
 
-  X_intera_val_4 = bert_q1[num_val]
+  X_intera_val_4 = bert_q1[num_train:num_val]
   X_val_lstm4_a = X_intera_val_4[:,:,np.newaxis]
 
-  X_intera_test_4 = bert_q1[num_test]
+  X_intera_test_4 = bert_q1[num_val:]
   X_test_lstm4_a = X_intera_test_4[:,:,np.newaxis]
 
-  X_interb_train_4 = bert_q2[num_train]
+  X_interb_train_4 = bert_q2[:num_train]
   X_train_lstm4_b = X_interb_train_4[:,:,np.newaxis]
 
-  X_interb_val_4 = bert_q2[num_val]
+  X_interb_val_4 = bert_q2[num_train:num_val]
   X_val_lstm4_b = X_interb_val_4[:,:,np.newaxis]
 
-  X_interb_test_4 = bert_q2[num_test]
+  X_interb_test_4 = bert_q2[num_val:]
   X_test_lstm4_b = X_interb_test_4[:,:,np.newaxis]
 
   print("Input Shapes")
@@ -545,7 +553,7 @@ def main():
                 Y_train,
               validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
                               , Y_val),
-              batch_size=384, nb_epoch=16, shuffle=True,callbacks = callbacks_list)
+              batch_size=384, nb_epoch=1, shuffle=True,callbacks = callbacks_list)
 
       # net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
       #           X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
