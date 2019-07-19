@@ -3,7 +3,8 @@ Detecting duplicate quora questions
 feature engineering
 @author: Abhishek Thakur
 """
-
+import nltk
+nltk.download('stopwords')
 import _pickle as cPickle
 import pandas as pd
 import numpy as np
@@ -13,8 +14,10 @@ from nltk.corpus import stopwords
 from tqdm import tqdm
 from scipy.stats import skew, kurtosis
 from scipy.spatial.distance import cosine, cityblock, jaccard, canberra, euclidean, minkowski, braycurtis
+
 from nltk import word_tokenize
 stop_words = stopwords.words('english')
+
 from numpy import genfromtxt
 
 def wmd(s1, s2):
