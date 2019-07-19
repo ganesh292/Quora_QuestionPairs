@@ -140,10 +140,9 @@ def create_base_network_lstm(input_dimensions):
   # layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   # layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
   # dense = Dense(376,name='dense_lstm')(layer2)
-  dense = Dense(376,name='dense_lstm')(layer2)
+  dense = Dense(376,name='dense_lstm')(input)
   dropb = Dropout(0.3)(dense)
   d33 = Dense(2, activation='dense_lstm2')(dropb)
-
   
   model = Model(input=input,output=d33)
   return model
