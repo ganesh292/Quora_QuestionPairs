@@ -146,7 +146,7 @@ def create_base_network_lstm(input_dimensions):
   
 
 def dense_network(features):
-  input = Input(shape=(1,features[0],features[1]))
+  input = Input(shape=(features[0],features[1]))
   #x = Flatten()(features)
   d1 = Dense(128, activation='relu')(input)
   drop1 = Dropout(0.1)(d1)
@@ -209,8 +209,8 @@ def create_network(input_dimensions,num_features):
 
   #BERT
   base_network_lstm_4 = dense_network([768,1])
-  input_a_lstm_4 = Input(shape=(1,768,1))
-  input_b_lstm_4 = Input(shape=(1,768,1))
+  input_a_lstm_4 = Input(shape=(768,1))
+  input_b_lstm_4 = Input(shape=(768,1))
    # LSTM with embedding 3
   inter_a_lstm_4 = base_network_lstm_4(input_a_lstm_4)
   inter_b_lstm_4 = base_network_lstm_4(input_b_lstm_4)
@@ -226,7 +226,7 @@ def create_network(input_dimensions,num_features):
 
 
 
-  # d_cnn = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_cnn, inter_b_cnn])
+  d_cnn = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_cnn, inter_b_cnn])
   d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
   d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
@@ -240,7 +240,7 @@ def create_network(input_dimensions,num_features):
   
   
   #Concatenation of Features
-  feature_set = Concatenate(axis=-1)([d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
+  feature_set = Concatenate(axis=-1)([d_cnn_d,d_lstm_1,d_lstm_2,d_lstm_3,d_lstm_4,features,features_b])
   # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
   # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_4,features,features_b])
   # feature_set = add_features(feature_set)
