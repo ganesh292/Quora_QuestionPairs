@@ -130,7 +130,7 @@ def create_base_network_cnn(input_dimensions):
   conv3  = Conv1D(filters=128,kernel_size=4,strides=1,activation='relu',name='conv3')(pool2)
   flat   = Flatten(name='flat_cnn')(conv3)
   # dense  = Dense(376,name='dense_cnn')(flat)
-  dense  = Dense(300,name='dense_cnn',kernel_regularizer=regularizers.l2(0.01))(flat)
+  dense  = Dense(376,name='dense_cnn')(flat)
    
   model  = Model(input=input,output=dense)
   return model
@@ -140,7 +140,7 @@ def create_base_network_lstm(input_dimensions):
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
   # dense = Dense(376,name='dense_lstm')(layer2)
-  dense = Dense(768,name='dense_lstm')(layer2)
+  dense = Dense(300,name='dense_lstm')(layer2)
   
   model = Model(input=input,output=dense)
   return model
@@ -505,13 +505,13 @@ def main():
   X_test_lstm4_a = X_intera_test_4[:,:,np.newaxis]
 
   X_intera_train_4 = bert_q2[num_train]
-  X_train_lstm4_b = X_intera_train_4[:,:,np.newaxis]
+  X_train_lstm4_b = X_interb_train_4[:,:,np.newaxis]
 
   X_intera_val_4 = bert_q2[num_val]
-  X_val_lstm4_b = X_intera_val_4[:,:,np.newaxis]
+  X_val_lstm4_b = X_interb_val_4[:,:,np.newaxis]
 
   X_intera_test_4 = bert_q2[num_test]
-  X_test_lstm4_b = X_intera_test_4[:,:,np.newaxis]
+  X_test_lstm4_b = X_interb_test_4[:,:,np.newaxis]
 
   print("Input Shapes")
   print("CNN Shape")
