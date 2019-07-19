@@ -230,7 +230,7 @@ def create_network(input_dimensions,num_features):
   d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
   d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
-  d_lstm_4 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_4, inter_b_lstm_4])
+  # d_lstm_4 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_4, inter_b_lstm_4])
   
   # Additional Features from Thakur (BERT)
   features = Input(shape=(num_features,))
