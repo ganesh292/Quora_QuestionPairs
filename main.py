@@ -361,7 +361,7 @@ def main():
   # set number of train and test instances
 
   total = np.arange(df_sub.shape[0])
-  num_train1,num_test = train_test_split(total,test_size=0.1)
+  num_train1,num_test = train_test_split(total,test_size=0.1,random_state=33)
   num_train,num_val = train_test_split(num_train1,test_size=1/9)
               
   print("Number of training pairs: %i"%(len(num_train)))
@@ -383,9 +383,9 @@ def main():
   Y_val = np.zeros([len(num_val)]) 
 
   #Labels
-  Y_train = df_sub[num_train]['is_duplicate'].values
-  Y_val = df_sub[num_val]['is_duplicate'].values
-  Y_test = df_sub[num_val]['is_duplicate'].values
+  Y_train = df_sub['is_duplicate'].values[num_train]
+  Y_val = df_sub['is_duplicate'].values[num_val]
+  Y_test = df_sub['is_duplicate'].values[num_val]
   
   #Features Data
   features_train = features[num_train]
