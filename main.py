@@ -254,7 +254,7 @@ def create_network(input_dimensions,num_features):
 
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_4, input_b_lstm_4,features,features_b], output=d3)
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
-    model = Model(input=[input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
+  model = Model(input=[input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
 
   print("Model Architecture Designed")
   return model
