@@ -260,7 +260,7 @@ def create_network(input_dimensions,num_features):
   drop2 = Dropout(0.3)(d2)
   b2 = BatchNormalization()(drop2)
   d3 = Dense(1, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b2)
-  model = Model(input = input,output=d3)
+
 
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_4, input_b_lstm_4,features,features_b], output=d3)
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
