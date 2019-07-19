@@ -129,17 +129,17 @@ def create_base_network_cnn(input_dimensions):
   pool2  = MaxPooling1D(pool_size=1,strides=1,name='pool2')(conv2)
   conv3  = Conv1D(filters=128,kernel_size=4,strides=1,activation='relu',name='conv3')(pool2)
   flat   = Flatten(name='flat_cnn')(conv3)
-  # dense  = Dense(376,name='dense_cnn')(flat)
-  dense  = Dense(100,name='dense_cnn')(flat)
+  dense  = Dense(376,name='dense_cnn')(flat)
+  # dense  = Dense(100,name='dense_cnn')(flat)
    
   model  = Model(input=input,output=dense)
   return model
 
 def create_base_network_lstm(input_dimensions):
-  input = Input(shape=(768,1))
+  input = Input(shape=(input_dimensions[0],1))
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
-  dense = Dense(2,name='dense_lstm')(layer2)
+  dense = Dense(376,name='dense_lstm')(layer2)
   
   model = Model(input=input,output=dense)
   return model
@@ -179,41 +179,41 @@ def add_features():
 def create_network(input_dimensions,num_features):
 
   # #Fasttext
-  # base_network_lstm_1 = create_base_network_lstm(input_dimensions)
-  # input_a_lstm_1 = Input(shape=(input_dimensions[0],1))
-  # input_b_lstm_1 = Input(shape=(input_dimensions[0],1))
-  # # LSTM with embedding 1
-  # inter_a_lstm_1 = base_network_lstm_1(input_a_lstm_1)
-  # inter_b_lstm_1 = base_network_lstm_1(input_b_lstm_1)
-  # d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
+  base_network_lstm_1 = create_base_network_lstm(input_dimensions)
+  input_a_lstm_1 = Input(shape=(input_dimensions[0],1))
+  input_b_lstm_1 = Input(shape=(input_dimensions[0],1))
+  # LSTM with embedding 1
+  inter_a_lstm_1 = base_network_lstm_1(input_a_lstm_1)
+  inter_b_lstm_1 = base_network_lstm_1(input_b_lstm_1)
+  d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
 
 
-  # #W2V
-  # base_network_lstm_2 = create_base_network_lstm(input_dimensions)
-  # input_a_lstm_2 = Input(shape=(input_dimensions[0],1))
-  # input_b_lstm_2 = Input(shape=(input_dimensions[0],1))
-  # # LSTM with embedding 2
-  # inter_a_lstm_2 = base_network_lstm_2(input_a_lstm_2)
-  # inter_b_lstm_2 = base_network_lstm_2(input_b_lstm_2)
-  # d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
+  #W2V
+  base_network_lstm_2 = create_base_network_lstm(input_dimensions)
+  input_a_lstm_2 = Input(shape=(input_dimensions[0],1))
+  input_b_lstm_2 = Input(shape=(input_dimensions[0],1))
+  # LSTM with embedding 2
+  inter_a_lstm_2 = base_network_lstm_2(input_a_lstm_2)
+  inter_b_lstm_2 = base_network_lstm_2(input_b_lstm_2)
+  d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
 
 
-  # #Glove
-  # base_network_lstm_3 = create_base_network_lstm(input_dimensions)
-  # input_a_lstm_3 = Input(shape=(input_dimensions[0],1))
-  # input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
-  # # LSTM with embedding 3
-  # inter_a_lstm_3 = base_network_lstm_3(input_a_lstm_3)
-  # inter_b_lstm_3 = base_network_lstm_3(input_b_lstm_3)
-  # d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
+  #Glove
+  base_network_lstm_3 = create_base_network_lstm(input_dimensions)
+  input_a_lstm_3 = Input(shape=(input_dimensions[0],1))
+  input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
+  # LSTM with embedding 3
+  inter_a_lstm_3 = base_network_lstm_3(input_a_lstm_3)
+  inter_b_lstm_3 = base_network_lstm_3(input_b_lstm_3)
+  d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
 
   #BERT
-  base_network_lstm_4 = create_base_network_lstm([768,1])
-  input_a_lstm_4 = Input(shape=(768,1))
-  input_b_lstm_4 = Input(shape=(768,1))
-   # LSTM with embedding 3
-  inter_a_lstm_4 = base_network_lstm_4(input_a_lstm_4)
-  inter_b_lstm_4 = base_network_lstm_4(input_b_lstm_4)
+  # base_network_lstm_4 = create_base_network_lstm([768,1])
+  # input_a_lstm_4 = Input(shape=(768,1))
+  # input_b_lstm_4 = Input(shape=(768,1))
+  #  # LSTM with embedding 3
+  # inter_a_lstm_4 = base_network_lstm_4(input_a_lstm_4)
+  # inter_b_lstm_4 = base_network_lstm_4(input_b_lstm_4)
 
   
   #CNN
@@ -227,9 +227,9 @@ def create_network(input_dimensions,num_features):
 
 
   d_cnn = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_cnn, inter_b_cnn])
-  # d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
-  # d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
-  # d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
+  d_lstm_1 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_1, inter_b_lstm_1])
+  d_lstm_2 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_2, inter_b_lstm_2])
+  d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
   d_lstm_4 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_4, inter_b_lstm_4])
   
   # Additional Features from Thakur (BERT)
@@ -240,8 +240,8 @@ def create_network(input_dimensions,num_features):
   
   
   #Concatenation of Features
-  # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
-  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_4,features,features_b])
+  feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_1,d_lstm_2,d_lstm_3,features,features_b])
+  # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_4,features,features_b])
   # feature_set = add_features(feature_set)
 
   #Final Dense Layer
@@ -251,8 +251,8 @@ def create_network(input_dimensions,num_features):
   drop2 = Dropout(0.2)(d2)
   d3 = Dense(1, activation='sigmoid')(drop2)
 
-  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_4, input_b_lstm_4,features,features_b], output=d3)
-  # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
+  # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_4, input_b_lstm_4,features,features_b], output=d3)
+  model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
   print("Model Architecture Designed")
   return model
   
@@ -449,55 +449,55 @@ def main():
 
   # # Training Sets for LSTM1
 
-  # X_intera_train_1 = X_train_cnn_a[:,:,0]
-  # X_interb_train_1 = X_train_cnn_b[:,:,0]
-  # X_train_lstm1_a = X_intera_train_1[:,:,np.newaxis]
-  # X_train_lstm1_b = X_interb_train_1[:,:,np.newaxis]
+  X_intera_train_1 = X_train_cnn_a[:,:,0]
+  X_interb_train_1 = X_train_cnn_b[:,:,0]
+  X_train_lstm1_a = X_intera_train_1[:,:,np.newaxis]
+  X_train_lstm1_b = X_interb_train_1[:,:,np.newaxis]
 
-  # X_intera_val_1 = X_val_cnn_a[:,:,0]
-  # X_interb_val_1 = X_val_cnn_b[:,:,0]
-  # X_val_lstm1_a = X_intera_val_1[:,:,np.newaxis]
-  # X_val_lstm1_b = X_interb_val_1[:,:,np.newaxis]
+  X_intera_val_1 = X_val_cnn_a[:,:,0]
+  X_interb_val_1 = X_val_cnn_b[:,:,0]
+  X_val_lstm1_a = X_intera_val_1[:,:,np.newaxis]
+  X_val_lstm1_b = X_interb_val_1[:,:,np.newaxis]
 
-  # X_intera_test_1 = X_test_cnn_a[:,:,0]
-  # X_interb_test_1 = X_test_cnn_b[:,:,0]
-  # X_test_lstm1_a = X_intera_test_1[:,:,np.newaxis]
-  # X_test_lstm1_b = X_interb_test_1[:,:,np.newaxis]
+  X_intera_test_1 = X_test_cnn_a[:,:,0]
+  X_interb_test_1 = X_test_cnn_b[:,:,0]
+  X_test_lstm1_a = X_intera_test_1[:,:,np.newaxis]
+  X_test_lstm1_b = X_interb_test_1[:,:,np.newaxis]
 
 
-  # # Validation Sets for LSTM2
+  # Validation Sets for LSTM2
 
-  # X_intera_train_2 = X_train_cnn_a[:,:,1]
-  # X_interb_train_2 = X_train_cnn_b[:,:,1]
-  # X_train_lstm2_a = X_intera_train_2[:,:,np.newaxis]
-  # X_train_lstm2_b = X_interb_train_2[:,:,np.newaxis]
+  X_intera_train_2 = X_train_cnn_a[:,:,1]
+  X_interb_train_2 = X_train_cnn_b[:,:,1]
+  X_train_lstm2_a = X_intera_train_2[:,:,np.newaxis]
+  X_train_lstm2_b = X_interb_train_2[:,:,np.newaxis]
 
-  # X_intera_val_2 = X_val_cnn_a[:,:,1]
-  # X_interb_val_2 = X_val_cnn_b[:,:,1]
-  # X_val_lstm2_a = X_intera_val_2[:,:,np.newaxis]
-  # X_val_lstm2_b = X_interb_val_2[:,:,np.newaxis]
+  X_intera_val_2 = X_val_cnn_a[:,:,1]
+  X_interb_val_2 = X_val_cnn_b[:,:,1]
+  X_val_lstm2_a = X_intera_val_2[:,:,np.newaxis]
+  X_val_lstm2_b = X_interb_val_2[:,:,np.newaxis]
 
-  # X_intera_test_2 = X_test_cnn_a[:,:,1]
-  # X_interb_test_2 = X_test_cnn_b[:,:,1]
-  # X_test_lstm2_a = X_intera_test_2[:,:,np.newaxis]
-  # X_test_lstm2_b = X_interb_test_2[:,:,np.newaxis]
+  X_intera_test_2 = X_test_cnn_a[:,:,1]
+  X_interb_test_2 = X_test_cnn_b[:,:,1]
+  X_test_lstm2_a = X_intera_test_2[:,:,np.newaxis]
+  X_test_lstm2_b = X_interb_test_2[:,:,np.newaxis]
   
-  # # Test Set for LSTM3
+  # Test Set for LSTM3
 
-  # X_intera_train_3 = X_train_cnn_a[:,:,2]
-  # X_interb_train_3 = X_train_cnn_b[:,:,2]
-  # X_train_lstm3_a = X_intera_train_3[:,:,np.newaxis]
-  # X_train_lstm3_b = X_interb_train_3[:,:,np.newaxis]
+  X_intera_train_3 = X_train_cnn_a[:,:,2]
+  X_interb_train_3 = X_train_cnn_b[:,:,2]
+  X_train_lstm3_a = X_intera_train_3[:,:,np.newaxis]
+  X_train_lstm3_b = X_interb_train_3[:,:,np.newaxis]
  
-  # X_intera_val_3 = X_val_cnn_a[:,:,2]
-  # X_interb_val_3 = X_val_cnn_b[:,:,2]
-  # X_val_lstm3_a = X_intera_val_3[:,:,np.newaxis]
-  # X_val_lstm3_b = X_interb_val_3[:,:,np.newaxis]
+  X_intera_val_3 = X_val_cnn_a[:,:,2]
+  X_interb_val_3 = X_val_cnn_b[:,:,2]
+  X_val_lstm3_a = X_intera_val_3[:,:,np.newaxis]
+  X_val_lstm3_b = X_interb_val_3[:,:,np.newaxis]
   
-  # X_intera_test_3 = X_test_cnn_a[:,:,2]
-  # X_interb_test_3 = X_test_cnn_b[:,:,2]
-  # X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
-  # X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
+  X_intera_test_3 = X_test_cnn_a[:,:,2]
+  X_interb_test_3 = X_test_cnn_b[:,:,2]
+  X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
+  X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
 
 
   # Test Set for LSTM4 BERT
@@ -548,22 +548,22 @@ def main():
 
 
 
-      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm4_a, X_train_lstm4_b,features_train,features_b_train], 
-                Y_train,
-              validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
-                              , Y_val),
-              batch_size=384, nb_epoch=1, shuffle=True,callbacks = callbacks_list)
-
-      # net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
-      #           X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
+      # net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm4_a, X_train_lstm4_b,features_train,features_b_train], 
       #           Y_train,
-      #         validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
-      #                         X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
+      #         validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
       #                         , Y_val),
-      #         batch_size=384, nb_epoch=16, shuffle=True,callbacks = callbacks_list)
-    score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
-    # score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
-    #               X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
+      #         batch_size=384, nb_epoch=1, shuffle=True,callbacks = callbacks_list)
+
+      net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,
+                X_train_lstm2_a, X_train_lstm2_b,X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
+                Y_train,
+              validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
+                              X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
+                              , Y_val),
+              batch_size=384, nb_epoch=16, shuffle=True,callbacks = callbacks_list)
+    # score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
+    score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
+                  X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
     print('Test loss : {:.4f}'.format(score[0]))
     print('Test accuracy : {:.4f}'.format(score[1]))
   else:
