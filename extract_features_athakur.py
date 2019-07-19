@@ -51,7 +51,7 @@ def sent2vec(s):
     return v / np.sqrt((v ** 2).sum())
 
 
-data = pd.read_csv('F:\MSCI641\Quora_QuestionPairs\data_unbalanced.csv')
+data = pd.read_csv('./data_unbalanced.csv')
 data = data.drop(['id', 'qid1', 'qid2'], axis=1)
 
 
@@ -71,9 +71,9 @@ data['fuzz_partial_token_sort_ratio'] = data.apply(lambda x: fuzz.partial_token_
 data['fuzz_token_set_ratio'] = data.apply(lambda x: fuzz.token_set_ratio(str(x['question1']), str(x['question2'])), axis=1)
 data['fuzz_token_sort_ratio'] = data.apply(lambda x: fuzz.token_sort_ratio(str(x['question1']), str(x['question2'])), axis=1)
 
-bert_q = genfromtxt('F:/MSCI641/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_q1_unbalanced.csv', delimiter=',',skip_header=1)
+bert_q = genfromtxt('/home/ganesh/Quora_dev/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_q1_unbalanced.csv', delimiter=',',skip_header=1)
 question1_vectors = np.delete(bert_q,0,1)
-bert_q = genfromtxt('F:/MSCI641/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_q2_unbalanced.csv', delimiter=',',skip_header=1)
+bert_q = genfromtxt('/home/ganesh/Quora_dev/tmp/Ganesh_MSCI/Unbalanced_Embeddings/bert/bert_q1_unbalanced.csv', delimiter=',',skip_header=1)
 question2_vectors = np.delete(bert_q,0,1)
  
 data['cosine_distance'] = [cosine(x, y) for (x, y) in zip(np.nan_to_num(question1_vectors),
