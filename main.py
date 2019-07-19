@@ -140,7 +140,7 @@ def create_base_network_lstm(input_dimensions):
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
   layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
   # dense = Dense(376,name='dense_lstm')(layer2)
-  dense = Dense(300,name='dense_lstm')(layer2)
+  dense = Dense(768,name='dense_lstm')(layer2)
   
   model = Model(input=input,output=dense)
   return model
@@ -209,7 +209,7 @@ def create_network(input_dimensions,num_features):
   # d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
 
   #BERT
-  base_network_lstm_4 = create_base_network_lstm((768,1))
+  base_network_lstm_4 = create_base_network_lstm([768,1])
   input_a_lstm_4 = Input(shape=(768,1))
   input_b_lstm_4 = Input(shape=(768,1))
    # LSTM with embedding 3
