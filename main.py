@@ -152,7 +152,7 @@ def dense_network(features):
   drop1 = Dropout(0.1)(d1)
   d2 = Dense(128, activation='relu')(drop1)
   drop2 = Dropout(0.1)(d2)
-  d3 = Dense(2, activation='relu')(drop2)
+  d3 = Dense(1, activation='relu')(drop2)
   model = Model(input = input,output=d3)
   return model
   
