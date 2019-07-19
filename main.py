@@ -138,8 +138,10 @@ def create_base_network_cnn(input_dimensions):
 def create_base_network_lstm(input_dimensions):
   input = Input(shape=(input_dimensions[0],1))
   layer1 = LSTM(20, return_sequences=True,activation='relu',name='lstm_1')(input)
-  layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(layer1)
-  dense = Dense(100,name='dense_lstm')(layer2)
+  b3 = BatchNormalization(layer1)
+  layer2 = LSTM(20,return_sequences=False,activation='relu',name='lstm_2')(b3)
+  b3 = BatchNormalization(layer2)
+  dense = Dense(100,name='dense_lstm')(b3)
   
   model = Model(input=input,output=dense)
   return model
@@ -150,9 +152,11 @@ def dense_network(features):
   #x = Flatten()(features)
   d1 = Dense(128, activation='relu')(input)
   drop1 = Dropout(0.1)(d1)
-  d2 = Dense(128, activation='relu')(drop1)
+  b1 = BatchNormalization(drop1)
+  d2 = Dense(128, activation='relu')(b1)
   drop2 = Dropout(0.1)(d2)
-  d3 = Dense(1, activation='relu')(drop2)
+  b2 = BatchNormalization(drop2)
+  d3 = Dense(1, activation='relu')(b2)
   model = Model(input = input,output=d3)
   return model
   
@@ -245,12 +249,18 @@ def create_network(input_dimensions,num_features):
   # feature_set = Concatenate(axis=-1)([d_cnn,d_lstm_4,features,features_b])
   # feature_set = add_features(feature_set)
 
-  #Final Dense Layer
-  d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(feature_set)
+
+
+  input = Input(shape=(features[0],features[1]))
+  #x = Flatten()(features)
+  d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(input)
   drop1 = Dropout(0.3)(d1)
-  d2 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(drop1)
+  b1 = BatchNormalization(drop1)
+  d2 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b1)
   drop2 = Dropout(0.3)(d2)
-  d3 = Dense(1, activation='sigmoid')(drop2)
+  b2 = BatchNormalization(drop2)
+  d3 = Dense(1, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b2)
+  model = Model(input = input,output=d3)
 
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_4, input_b_lstm_4,features,features_b], output=d3)
   # model = Model(input=[input_a_cnn, input_b_cnn , input_a_lstm_1, input_b_lstm_1, input_a_lstm_2, input_b_lstm_2, input_a_lstm_3, input_b_lstm_3,features,features_b], output=d3)
