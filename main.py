@@ -383,7 +383,7 @@ def main():
   Y_val = np.zeros([len(num_val)]) 
 
   #Labels
-  Y_train = df_sub[:num_train]['is_duplicate'].values
+  Y_train = df_sub[num_train]['is_duplicate'].values
   Y_val = df_sub[num_val]['is_duplicate'].values
   Y_test = df_sub[num_val]['is_duplicate'].values
   
