@@ -208,7 +208,7 @@ def create_network(input_dimensions,num_features):
   d_lstm_3 = Lambda(euclidean_distance, output_shape=eucl_dist_output_shape)([inter_a_lstm_3, inter_b_lstm_3])
 
   #BERT
-  base_network_lstm_4 = dense_network([768,1])
+  base_network_lstm_4 = create_base_network_lstm([768,1])
   input_a_lstm_4 = Input(shape=(768,1))
   input_b_lstm_4 = Input(shape=(768,1))
    # LSTM with embedding 3
