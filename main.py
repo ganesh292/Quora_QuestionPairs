@@ -142,7 +142,7 @@ def create_base_network_lstm(input_dimensions):
   # dense = Dense(376,name='dense_lstm')(layer2)
   dense = Dense(376,name='dense_lstm')(input)
   dropb = Dropout(0.3)(dense)
-  d33 = Dense(2, activation='dense_lstm2')(dropb)
+  d33 = Dense(2, name='dense_lstm2')(dropb)
   
   model = Model(input=input,output=d33)
   return model
