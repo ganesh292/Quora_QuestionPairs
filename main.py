@@ -251,9 +251,9 @@ def create_network(input_dimensions,num_features):
 
 
 
-  input = Input(shape=(features[0],features[1]))
+
   #x = Flatten()(features)
-  d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(input)
+  d1 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(feature_set)
   drop1 = Dropout(0.3)(d1)
   b1 = BatchNormalization()(drop1)
   d2 = Dense(128, activation='relu',kernel_regularizer=regularizers.l2(0.1))(b1)
