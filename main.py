@@ -18,6 +18,7 @@ import nltk
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 from sklearn.model_selection import train_test_split
+import keras
 from keras import backend as K
 from keras import callbacks
 import tensorflow as tf
@@ -134,9 +135,9 @@ def create_network(input_dimensions,num_features):
 
 
     #Glove
-    base_network_lstm_3 = create_base_network_lstm([324,1])
-    input_a_lstm_3 = Input(shape=(input_dimensions[0],1))
-    input_b_lstm_3 = Input(shape=(input_dimensions[0],1))
+    base_network_lstm_3 = dense_network([324,1])
+    input_a_lstm_3 = Input(shape=(input_dimensions[0],))
+    input_b_lstm_3 = Input(shape=(input_dimensions[0],))
     # LSTM with embedding 3
     inter_a_lstm_3 = base_network_lstm_3(input_a_lstm_3)
     inter_b_lstm_3 = base_network_lstm_3(input_b_lstm_3)
@@ -305,6 +306,10 @@ def main():
   Y_test = df_sub[num_val:]['is_duplicate'].values
 
 
+  Y_train = keras.utils.to_categorical(Y_train, num_classes=2)
+  Y_test = keras.utils.to_categorical(Y_test, num_classes=2)
+  Y_val = keras.utils.to_categorical(Y_val, num_classes=2)
+
  
   
   
@@ -319,80 +324,80 @@ def main():
 
   X_intera_train_1 = X_train_cnn_a[:,:,0]
   X_interb_train_1 = X_train_cnn_b[:,:,0]
-  X_train_lstm1_a = X_intera_train_1[:,:,np.newaxis]
-  X_train_lstm1_b = X_interb_train_1[:,:,np.newaxis]
+  X_train_lstm1_a = X_intera_train_1
+  X_train_lstm1_b = X_interb_train_1
 
   X_intera_val_1 = X_val_cnn_a[:,:,0]
   X_interb_val_1 = X_val_cnn_b[:,:,0]
-  X_val_lstm1_a = X_intera_val_1[:,:,np.newaxis]
-  X_val_lstm1_b = X_interb_val_1[:,:,np.newaxis]
+  X_val_lstm1_a = X_intera_val_1
+  X_val_lstm1_b = X_interb_val_1
 
   X_intera_test_1 = X_test_cnn_a[:,:,0]
   X_interb_test_1 = X_test_cnn_b[:,:,0]
-  X_test_lstm1_a = X_intera_test_1[:,:,np.newaxis]
-  X_test_lstm1_b = X_interb_test_1[:,:,np.newaxis]
+  X_test_lstm1_a = X_intera_test_1
+  X_test_lstm1_b = X_interb_test_1
 
 
   # Validation Sets for LSTM2
 
   X_intera_train_2 = X_train_cnn_a[:,:,1]
   X_interb_train_2 = X_train_cnn_b[:,:,1]
-  X_train_lstm2_a = X_intera_train_2[:,:,np.newaxis]
-  X_train_lstm2_b = X_interb_train_2[:,:,np.newaxis]
+  X_train_lstm2_a = X_intera_train_2
+  X_train_lstm2_b = X_interb_train_2
 
   X_intera_val_2 = X_val_cnn_a[:,:,1]
   X_interb_val_2 = X_val_cnn_b[:,:,1]
-  X_val_lstm2_a = X_intera_val_2[:,:,np.newaxis]
-  X_val_lstm2_b = X_interb_val_2[:,:,np.newaxis]
+  X_val_lstm2_a = X_intera_val_2
+  X_val_lstm2_b = X_interb_val_2
 
   X_intera_test_2 = X_test_cnn_a[:,:,1]
   X_interb_test_2 = X_test_cnn_b[:,:,1]
-  X_test_lstm2_a = X_intera_test_2[:,:,np.newaxis]
-  X_test_lstm2_b = X_interb_test_2[:,:,np.newaxis]
+  X_test_lstm2_a = X_intera_test_2
+  X_test_lstm2_b = X_interb_test_2
   
   # Test Set for LSTM3
 
   X_intera_train_3 = X_train_cnn_a[:,:,2]
   X_interb_train_3 = X_train_cnn_b[:,:,2]
-  X_train_lstm3_a = X_intera_train_3[:,:,np.newaxis]
-  X_train_lstm3_b = X_interb_train_3[:,:,np.newaxis]
+  X_train_lstm3_a = X_intera_train_3
+  X_train_lstm3_b = X_interb_train_3
  
   X_intera_val_3 = X_val_cnn_a[:,:,2]
   X_interb_val_3 = X_val_cnn_b[:,:,2]
-  X_val_lstm3_a = X_intera_val_3[:,:,np.newaxis]
-  X_val_lstm3_b = X_interb_val_3[:,:,np.newaxis]
+  X_val_lstm3_a = X_intera_val_3
+  X_val_lstm3_b = X_interb_val_3
   
   X_intera_test_3 = X_test_cnn_a[:,:,2]
   X_interb_test_3 = X_test_cnn_b[:,:,2]
-  X_test_lstm3_a = X_intera_test_3[:,:,np.newaxis]
-  X_test_lstm3_b = X_interb_test_3[:,:,np.newaxis]
+  X_test_lstm3_a = X_intera_test_3
+  X_test_lstm3_b = X_interb_test_3
 
 
   # Test Set for LSTM4 BERT
 
-  X_intera_train_4 = bert_q1[:num_train]
-  X_train_lstm4_a = X_intera_train_4[:,:,np.newaxis]
+  # X_intera_train_4 = bert_q1[:num_train]
+  # X_train_lstm4_a = X_intera_train_4
 
-  X_intera_val_4 = bert_q1[num_train:num_val]
-  X_val_lstm4_a = X_intera_val_4[:,:,np.newaxis]
+  # X_intera_val_4 = bert_q1[num_train:num_val]
+  # X_val_lstm4_a = X_intera_val_4
 
-  X_intera_test_4 = bert_q1[num_val:]
-  X_test_lstm4_a = X_intera_test_4[:,:,np.newaxis]
+  # X_intera_test_4 = bert_q1[num_val:]
+  # X_test_lstm4_a = X_intera_test_4
 
-  X_interb_train_4 = bert_q2[:num_train]
-  X_train_lstm4_b = X_interb_train_4[:,:,np.newaxis]
+  # X_interb_train_4 = bert_q2[:num_train]
+  # X_train_lstm4_b = X_interb_train_4
 
-  X_interb_val_4 = bert_q2[num_train:num_val]
-  X_val_lstm4_b = X_interb_val_4[:,:,np.newaxis]
+  # X_interb_val_4 = bert_q2[num_train:num_val]
+  # X_val_lstm4_b = X_interb_val_4
 
-  X_interb_test_4 = bert_q2[num_val:]
-  X_test_lstm4_b = X_interb_test_4[:,:,np.newaxis]
+  # X_interb_test_4 = bert_q2[num_val:]
+  # X_test_lstm4_b = X_interb_test_4
 
   print("Input Shapes")
   print("CNN Shape")
   print(X_train_cnn_a.shape,X_val_cnn_a.shape,X_test_cnn_a.shape)
   print("LSTM (x3) Shape:")
-  print(X_train_lstm4_a.shape,X_val_lstm4_a.shape,X_test_lstm4_a.shape)
+  print(X_train_lstm1_a.shape,X_val_lstm1_a.shape,X_test_lstm1_a.shape)
 
   print("Features shape:",features_train.shape,features_val.shape,features_test.shape)
   print("BERT Features shape:",features_b_train.shape,features_b_val.shape,features_b_test.shape)
@@ -408,12 +413,14 @@ def main():
   callbacks_list = [checkpoint]
   
 
-  net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm4_a, X_train_lstm4_b,features_train,features_b_train], 
-            Y_train,
-          validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm4_a, X_val_lstm4_b,features_val,features_b_val]
+  net.fit([X_train_cnn_a, X_train_cnn_b, X_train_lstm1_a, X_train_lstm1_b,X_train_lstm2_a, X_train_lstm2_b,
+          X_train_lstm3_a, X_train_lstm3_b,features_train,features_b_train], 
+          Y_train,
+          validation_data=([X_val_cnn_a, X_val_cnn_b,X_val_lstm1_a, X_val_lstm1_b,
+          X_val_lstm2_a, X_val_lstm2_b,X_val_lstm3_a, X_val_lstm3_b,features_val,features_b_val]
                           , Y_val),
           batch_size=384, nb_epoch=100, shuffle=True,callbacks = callbacks_list)
-  score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
+  score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,features_test,features_b_test],Y_test,batch_size=384)
   # score = net.evaluate([X_test_cnn_a, X_test_cnn_b,X_test_lstm1_a, X_test_lstm1_b,
   #               X_test_lstm2_a, X_test_lstm2_b,X_test_lstm3_a, X_test_lstm3_b,X_test_lstm4_a, X_test_lstm4_b,features_test,features_b_test],Y_test,batch_size=384)
   print('Test loss : {:.4f}'.format(score[0]))
