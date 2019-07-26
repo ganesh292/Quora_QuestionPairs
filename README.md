@@ -76,8 +76,15 @@ embeddings , channel 3 with E3 embeddings)
 **Refer to Poster.pdf and Siamese.jpg for more details**
 
 Results and Ablation studies are displayed in poster as well.
-
-### 4. Reference
+### 4. Details:
+ 1. data.rar- Unzip data.rar to load the pre-trained embedding files
+ 2. main.py - Model Trained with proposed architecture giving best results
+ 3. BERT_embeddings- Script to get BERT Embeddings
+ 4. Feature_Engineering_BERT.py- 25 features generated using BERT Vectors thanks to Abhishek Thakur [4]
+ 5. get_sentence_embeddings.py - Glove,w2vec,fastext sentence embeddings using sent2vec and infersent
+ 6. models.py - Infersent pre-req file
+ 
+### 5. Reference
 [1] Ameya Godbole, Aman Dalmia, and Sunil Kumar Sahu. Siamese neural networks with
 random forest for detecting duplicate question pairs. arXiv preprint arXiv:1801.07288, 2018.
 
