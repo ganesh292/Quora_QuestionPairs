@@ -83,6 +83,7 @@ Results and Ablation studies are displayed in poster as well.
  4. Feature_Engineering_BERT.py- 25 features generated using BERT Vectors thanks to Abhishek Thakur [4]
  5. get_sentence_embeddings.py - Glove,w2vec,fastext sentence embeddings using sent2vec and infersent
  6. models.py - Infersent pre-req file
+ 7. A Notebook Version of the Project is Also Available
  
 ### 5. Reference
 [1] Ameya Godbole, Aman Dalmia, and Sunil Kumar Sahu. Siamese neural networks with
